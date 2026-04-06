@@ -1,0 +1,80 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: min(1200px, 96%);
+  margin: 16px auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(7, 12, 30, 0.7);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+}
+.topbar h1 { margin: 0; color: #fff; font-size: 1.05rem; font-weight: 700; }
+.topbar nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.topbar nav a, .link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  font-size: 0.87rem;
+  font-weight: 600;
+  transition: all .2s ease;
+}
+.topbar nav a:hover, .link-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(124, 58, 237, 0.28);
+  border-color: rgba(124, 58, 237, 0.55);
+}
+.link-btn { cursor: pointer; }
+.menu-toggle { display: none; }
+.theme-btn {
+  border-color: rgba(147, 197, 253, 0.6);
+  background: rgba(37, 99, 235, 0.2);
+}
+
+body[data-theme="light"] .topbar {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+body[data-theme="light"] .topbar h1 {
+  color: #0f172a;
+}
+
+body[data-theme="light"] .topbar nav a,
+body[data-theme="light"] .link-btn {
+  color: #0f172a;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+body[data-theme="light"] .topbar nav a:hover,
+body[data-theme="light"] .link-btn:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+@media (max-width: 768px) {
+  .topbar { padding: 12px; margin-top: 10px; }
+  .topbar h1 { width: 100%; font-size: .98rem; }
+  .menu-toggle {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
+  }
+  .topbar nav { width: 100%; display: none; }
+  .topbar nav.open { display: flex; }
+  .topbar nav a, .link-btn { flex: 1 1 calc(50% - 8px); }
+}

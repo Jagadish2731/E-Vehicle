@@ -1,0 +1,26 @@
+.user-dashboard .section-card {
+  border-left: 4px solid rgba(124, 58, 237, 0.65);
+}
+
+.user-dashboard .mini-card {
+  border: 1px solid rgba(30, 64, 175, 0.14);
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
+}
+
+.user-dashboard .mini-card .row {
+  margin-top: 10px;
+}
+
+.user-dashboard .user-bunk-toolbar {
+  margin-top: 12px;
+}
+
+.user-dashboard .user-bunk-search {
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
+.user-dashboard .bunk-result-grid,
+.user-dashboard .grid {
+  margin-top: 10px;
+}

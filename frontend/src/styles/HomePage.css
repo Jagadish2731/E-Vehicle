@@ -1,0 +1,25 @@
+.home-page .home-bunk-grid {
+  margin-top: 14px;
+}
+
+.home-page .bunk-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(91, 124, 250, 0.16);
+}
+
+.home-page .bunk-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -30% -40% auto;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.home-page .card a {
+  display: inline-flex;
+  margin-top: 6px;
+  font-weight: 700;
+}

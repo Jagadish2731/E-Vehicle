@@ -1,0 +1,18 @@
+.auth-page {
+  padding-top: 14px;
+}
+
+.auth-page > h2 {
+  text-align: center;
+}
+
+.auth-form {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(91, 124, 250, 0.2);
+  background: linear-gradient(180deg, #ffffff, #f8faff);
+}
+
+.register-page select {
+  font-weight: 600;
+}

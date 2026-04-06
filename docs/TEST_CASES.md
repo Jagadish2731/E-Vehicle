@@ -18,8 +18,8 @@
 3. Admin updates slot status -> status changed.
 4. Admin deletes slot -> slot removed.
 
-## User - Nearby Search and Booking
-1. User searches with lat/lng/radius -> nearby bunks returned sorted by distance.
+## User - Location Search and Booking
+1. User selects state/district (and optional city/area) and searches -> matching bunks returned.
 2. User views slots for bunk -> slot list returned.
 3. User books available slot -> booking created, slot becomes occupied.
 4. User books occupied slot -> booking blocked.
@@ -69,28 +69,30 @@ Use `Authorization: Bearer <adminToken>` for protected requests.
 ## Postman Smoke Checklist (User Booking APIs)
 Use `Authorization: Bearer <userToken>` for protected requests.
 
-1. `GET /api/bunks/nearby?lat=<lat>&lng=<lng>&radiusKm=20`
-   - Expect: HTTP 200
-   - Expect: nearby bunk array sorted by shortest distance
+1. `GET /api/bunks/location-meta`
+   - Expect: HTTP 200 with `states` and `districtsByState`
 
-2. `GET /api/slots/bunk/<bunkId>`
+2. `GET /api/bunks/search?state=Karnataka&district=Bengaluru%20Urban`
+   - Expect: HTTP 200 with bunks in that state/district
+
+3. `GET /api/slots/bunk/<bunkId>`
    - Expect: HTTP 200
    - Expect: slot list for selected bunk
 
-3. `POST /api/bookings`
+4. `POST /api/bookings`
    - Body: `{ "bunk": "<bunkId>", "slot": "<availableSlotId>" }`
    - Expect: HTTP 201
    - Expect: booking created with `status=booked`
 
-4. `GET /api/bookings/mine`
+5. `GET /api/bookings/mine`
    - Expect: HTTP 200
    - Expect: latest booking appears in user booking list
 
-5. `PATCH /api/bookings/<bookingId>/cancel`
+6. `PATCH /api/bookings/<bookingId>/cancel`
    - Expect: HTTP 200
    - Expect: booking status updated to `cancelled`
 
-6. `POST /api/bookings` using an already occupied slot
+7. `POST /api/bookings` using an already occupied slot
    - Expect: HTTP 400/409
    - Expect: booking is rejected with availability error
 
@@ -109,7 +111,7 @@ Use `Authorization: Bearer <userToken>` for protected requests.
    - Show slot list
 
 4. User booking demo
-   - Search nearby bunks
+   - Search bunks by state/district (and optional city/area)
    - Open bunk slots and create one booking
    - Verify booking appears in user dashboard
 

@@ -5,7 +5,20 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import "../styles/AdminDashboard.css";
 
 export default function AdminDashboard() {
-  const [bunkForm, setBunkForm] = useState({ name: "", address: "", mobile: "", googleMapLink: "", lat: "", lng: "", totalSlots: 0 });
+  const [bunkForm, setBunkForm] = useState({
+    name: "",
+    address: "",
+    mobile: "",
+    googleMapLink: "",
+    state: "",
+    district: "",
+    city: "",
+    area: "",
+    lat: "",
+    lng: "",
+    totalSlots: 0
+  });
+  const [locationMeta, setLocationMeta] = useState({ states: [], districtsByState: {} });
   const [slotForm, setSlotForm] = useState({ bunk: "", slotNumber: "", status: "available" });
   const [editingBunkId, setEditingBunkId] = useState("");
   const [selectedBunkSlots, setSelectedBunkSlots] = useState([]);
@@ -70,6 +83,15 @@ export default function AdminDashboard() {
     const init = async () => {
       try {
         await Promise.all([loadBunks(), loadReport()]);
+        try {
+          const metaRes = await api.get("/bunks/location-meta");
+          setLocationMeta({
+            states: metaRes.data.states || [],
+            districtsByState: metaRes.data.districtsByState || {}
+          });
+        } catch {
+          setLocationMeta({ states: [], districtsByState: {} });
+        }
       } catch (error) {
         showToast(getErrorMessage(error, "Failed to load admin dashboard data"), "error");
       } finally {
@@ -104,11 +126,16 @@ export default function AdminDashboard() {
     run();
   }, [loading, bookingsPage, bookingSearch, fetchBookings]);
 
+  const bunkDistrictOptions = useMemo(
+    () => (bunkForm.state ? locationMeta.districtsByState[bunkForm.state] || [] : []),
+    [bunkForm.state, locationMeta.districtsByState]
+  );
+
   const filteredBunks = useMemo(() => {
     const q = bunkSearch.trim().toLowerCase();
     let list = bunks.filter((b) => {
       if (!q) return true;
-      const hay = `${b.name} ${b.address} ${b.mobile}`.toLowerCase();
+      const hay = `${b.name} ${b.address} ${b.mobile} ${b.state || ""} ${b.district || ""} ${b.city || ""} ${b.area || ""}`.toLowerCase();
       return hay.includes(q);
     });
     const copy = [...list];
@@ -127,6 +154,10 @@ export default function AdminDashboard() {
         address: bunkForm.address,
         mobile: bunkForm.mobile,
         googleMapLink: bunkForm.googleMapLink,
+        state: bunkForm.state || undefined,
+        district: bunkForm.district || undefined,
+        city: bunkForm.city || undefined,
+        area: bunkForm.area || undefined,
         location: { lat: Number(bunkForm.lat), lng: Number(bunkForm.lng) },
         totalSlots: Number(bunkForm.totalSlots)
       };
@@ -138,7 +169,19 @@ export default function AdminDashboard() {
         showToast("Bunk created", "success");
       }
       setEditingBunkId("");
-      setBunkForm({ name: "", address: "", mobile: "", googleMapLink: "", lat: "", lng: "", totalSlots: 0 });
+      setBunkForm({
+        name: "",
+        address: "",
+        mobile: "",
+        googleMapLink: "",
+        state: "",
+        district: "",
+        city: "",
+        area: "",
+        lat: "",
+        lng: "",
+        totalSlots: 0
+      });
       loadBunks();
       loadReport();
     } catch (error) {
@@ -190,6 +233,10 @@ export default function AdminDashboard() {
       address: bunk.address,
       mobile: bunk.mobile,
       googleMapLink: bunk.googleMapLink || "",
+      state: bunk.state || "",
+      district: bunk.district || "",
+      city: bunk.city || "",
+      area: bunk.area || "",
       lat: bunk.location?.lat ?? "",
       lng: bunk.location?.lng ?? "",
       totalSlots: bunk.totalSlots ?? 0
@@ -202,7 +249,19 @@ export default function AdminDashboard() {
       showToast("Bunk deleted", "success");
       if (editingBunkId === id) {
         setEditingBunkId("");
-        setBunkForm({ name: "", address: "", mobile: "", googleMapLink: "", lat: "", lng: "", totalSlots: 0 });
+        setBunkForm({
+          name: "",
+          address: "",
+          mobile: "",
+          googleMapLink: "",
+          state: "",
+          district: "",
+          city: "",
+          area: "",
+          lat: "",
+          lng: "",
+          totalSlots: 0
+        });
       }
       loadBunks();
       loadReport();
@@ -371,9 +430,32 @@ export default function AdminDashboard() {
           <input placeholder="Bunk Name" required value={bunkForm.name} onChange={(e) => setBunkForm({ ...bunkForm, name: e.target.value })} />
           <input placeholder="Address" required value={bunkForm.address} onChange={(e) => setBunkForm({ ...bunkForm, address: e.target.value })} />
           <input placeholder="Mobile" required value={bunkForm.mobile} onChange={(e) => setBunkForm({ ...bunkForm, mobile: e.target.value })} />
+          <select
+            required
+            value={bunkForm.state}
+            onChange={(e) => setBunkForm({ ...bunkForm, state: e.target.value, district: "" })}
+          >
+            <option value="">State / UT</option>
+            {locationMeta.states.map((s) => (
+              <option value={s} key={s}>{s}</option>
+            ))}
+          </select>
+          <select
+            required
+            value={bunkForm.district}
+            disabled={!bunkForm.state}
+            onChange={(e) => setBunkForm({ ...bunkForm, district: e.target.value })}
+          >
+            <option value="">District</option>
+            {bunkDistrictOptions.map((d) => (
+              <option value={d} key={d}>{d}</option>
+            ))}
+          </select>
+          <input placeholder="City" value={bunkForm.city} onChange={(e) => setBunkForm({ ...bunkForm, city: e.target.value })} />
+          <input placeholder="Area / locality" value={bunkForm.area} onChange={(e) => setBunkForm({ ...bunkForm, area: e.target.value })} />
           <input placeholder="Google Map Link" value={bunkForm.googleMapLink} onChange={(e) => setBunkForm({ ...bunkForm, googleMapLink: e.target.value })} />
-          <input placeholder="Latitude" required value={bunkForm.lat} onChange={(e) => setBunkForm({ ...bunkForm, lat: e.target.value })} />
-          <input placeholder="Longitude" required value={bunkForm.lng} onChange={(e) => setBunkForm({ ...bunkForm, lng: e.target.value })} />
+          <input placeholder="Latitude (map pin)" required value={bunkForm.lat} onChange={(e) => setBunkForm({ ...bunkForm, lat: e.target.value })} />
+          <input placeholder="Longitude (map pin)" required value={bunkForm.lng} onChange={(e) => setBunkForm({ ...bunkForm, lng: e.target.value })} />
           <input placeholder="Total Slots" type="number" required value={bunkForm.totalSlots} onChange={(e) => setBunkForm({ ...bunkForm, totalSlots: e.target.value })} />
           <button type="submit">{editingBunkId ? "Update Bunk" : "Create Bunk"}</button>
         </form>
@@ -400,6 +482,11 @@ export default function AdminDashboard() {
             <article className="card mini-card" key={b._id}>
               <p><strong>{b.name}</strong></p>
               <p>{b.address}</p>
+              {(b.area || b.city || b.district || b.state) && (
+                <p className="bunk-location-line">
+                  {[b.area, b.city, b.district, b.state].filter(Boolean).join(" · ")}
+                </p>
+              )}
               <p>Mobile: {b.mobile}</p>
               <p>Slots: {b.slotStats?.available || 0}/{b.slotStats?.total || 0}</p>
               <div className="row">

@@ -30,7 +30,7 @@ EV users often face uncertainty in finding available charging points and booking
 
 ### 5.2 User Module
 - Register/Login
-- Search nearby bunks using latitude, longitude, radius
+- Search bunks by Indian state, district, and optional city or area
 - View bunk details (address, mobile, map link)
 - View slot vacancy
 - Book slots
@@ -55,7 +55,9 @@ Key relations:
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 - `GET /api/bunks`
-- `GET /api/bunks/nearby`
+- `GET /api/bunks/location-meta`
+- `GET /api/bunks/search`
+- `GET /api/bunks/nearby` (optional legacy)
 - `POST /api/bunks`
 - `PUT /api/bunks/:id`
 - `DELETE /api/bunks/:id`

@@ -21,7 +21,7 @@ The system has two modules:
 2. Register/login as user and admin.
 3. Admin creates EV bunk with address, contact, map link, and geo coordinates.
 4. Admin adds slots for that bunk and verifies slot list.
-5. User searches nearby bunks using latitude, longitude, and radius, then books one available slot.
+5. User searches bunks by Indian state, district, and optional city or area, then books one available slot.
 6. Admin opens booking table and demonstrates search (`q`), filters (status/date), sortable columns, and pagination.
 7. Admin updates booking status (charging/completed), then shows summary report and CSV export.
 8. Negative test: attempt booking an occupied slot and show rejection.

@@ -5,7 +5,8 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import "../styles/UserDashboard.css";
 
 export default function UserDashboard() {
-  const [coords, setCoords] = useState({ lat: "", lng: "", radiusKm: 10 });
+  const [locationMeta, setLocationMeta] = useState({ states: [], districtsByState: {} });
+  const [loc, setLoc] = useState({ state: "", district: "", city: "", area: "" });
   const [bunks, setBunks] = useState([]);
   const [slots, setSlots] = useState([]);
   const [selectedBunk, setSelectedBunk] = useState("");
@@ -14,16 +15,30 @@ export default function UserDashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [bunkSearch, setBunkSearch] = useState("");
-  const [bunkSort, setBunkSort] = useState("distance");
+  const [bunkSort, setBunkSort] = useState("name");
   const [confirmCancel, setConfirmCancel] = useState(null);
 
-  const searchNearby = async () => {
+  const districtOptions = useMemo(
+    () => (loc.state ? locationMeta.districtsByState[loc.state] || [] : []),
+    [loc.state, locationMeta.districtsByState]
+  );
+
+  const searchByLocation = async () => {
     try {
       setError("");
-      const response = await api.get(`/bunks/nearby?lat=${coords.lat}&lng=${coords.lng}&radiusKm=${coords.radiusKm}`);
+      const params = new URLSearchParams();
+      if (loc.state) params.append("state", loc.state);
+      if (loc.district) params.append("district", loc.district);
+      if (loc.city.trim()) params.append("city", loc.city.trim());
+      if (loc.area.trim()) params.append("area", loc.area.trim());
+      if (!params.toString()) {
+        setError("Choose state, district, or enter city / area.");
+        return;
+      }
+      const response = await api.get(`/bunks/search?${params.toString()}`);
       setBunks(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Unable to search nearby bunks");
+      setError(err.response?.data?.message || "Unable to search bunks");
     }
   };
 
@@ -79,12 +94,12 @@ export default function UserDashboard() {
     const q = bunkSearch.trim().toLowerCase();
     let list = bunks.filter((b) => {
       if (!q) return true;
-      const hay = `${b.name} ${b.address} ${b.mobile}`.toLowerCase();
+      const hay = `${b.name} ${b.address} ${b.mobile} ${b.state || ""} ${b.district || ""} ${b.city || ""} ${b.area || ""}`.toLowerCase();
       return hay.includes(q);
     });
     const copy = [...list];
-    if (bunkSort === "distance") copy.sort((a, b) => a.distanceKm - b.distanceKm);
     if (bunkSort === "name") copy.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    if (bunkSort === "city") copy.sort((a, b) => (a.city || "").localeCompare(b.city || ""));
     return copy;
   }, [bunks, bunkSearch, bunkSort]);
 
@@ -92,6 +107,10 @@ export default function UserDashboard() {
     const init = async () => {
       try {
         await loadBookings();
+        const { data } = await api.get("/bunks/location-meta");
+        setLocationMeta({ states: data.states || [], districtsByState: data.districtsByState || {} });
+      } catch {
+        setLocationMeta({ states: [], districtsByState: {} });
       } finally {
         setLoading(false);
       }
@@ -116,23 +135,52 @@ export default function UserDashboard() {
       />
 
       <section className="card section-card">
-        <h3 className="section-heading">Search Nearby EV Bunks</h3>
-        <div className="row">
-          <input placeholder="Latitude" value={coords.lat} onChange={(e) => setCoords({ ...coords, lat: e.target.value })} />
-          <input placeholder="Longitude" value={coords.lng} onChange={(e) => setCoords({ ...coords, lng: e.target.value })} />
-          <input placeholder="Radius km" value={coords.radiusKm} onChange={(e) => setCoords({ ...coords, radiusKm: e.target.value })} />
-          <button type="button" onClick={searchNearby}>Search</button>
+        <h3 className="section-heading">Find EV Bunks by Location</h3>
+        <p className="user-location-hint">
+          Select state and district (India), then optionally narrow by city or area. Click Search.
+        </p>
+        <div className="user-location-grid">
+          <select
+            value={loc.state}
+            onChange={(e) => setLoc({ ...loc, state: e.target.value, district: "" })}
+          >
+            <option value="">State / UT</option>
+            {locationMeta.states.map((s) => (
+              <option value={s} key={s}>{s}</option>
+            ))}
+          </select>
+          <select
+            value={loc.district}
+            disabled={!loc.state}
+            onChange={(e) => setLoc({ ...loc, district: e.target.value })}
+          >
+            <option value="">District</option>
+            {districtOptions.map((d) => (
+              <option value={d} key={d}>{d}</option>
+            ))}
+          </select>
+          <input
+            placeholder="City (optional)"
+            value={loc.city}
+            onChange={(e) => setLoc({ ...loc, city: e.target.value })}
+          />
+          <input
+            placeholder="Area / locality (optional)"
+            value={loc.area}
+            onChange={(e) => setLoc({ ...loc, area: e.target.value })}
+          />
+          <button type="button" onClick={searchByLocation}>Search</button>
         </div>
         <div className="row user-bunk-toolbar">
           <input
             className="user-bunk-search"
-            placeholder="Filter results by name, address..."
+            placeholder="Filter results by name, address, area..."
             value={bunkSearch}
             onChange={(e) => setBunkSearch(e.target.value)}
           />
           <select value={bunkSort} onChange={(e) => setBunkSort(e.target.value)}>
-            <option value="distance">Sort by distance</option>
             <option value="name">Sort by name</option>
+            <option value="city">Sort by city</option>
           </select>
         </div>
         <div className="grid bunk-result-grid">
@@ -140,8 +188,12 @@ export default function UserDashboard() {
             <article className="card mini-card" key={b._id}>
               <h4>{b.name}</h4>
               <p>{b.address}</p>
+              {(b.area || b.city || b.district || b.state) && (
+                <p className="user-bunk-location">
+                  {[b.area, b.city, b.district, b.state].filter(Boolean).join(" · ")}
+                </p>
+              )}
               <p>Mobile: {b.mobile}</p>
-              <p>Distance: {b.distanceKm.toFixed(2)} km</p>
               {b.googleMapLink && (
                 <p>
                   <a href={b.googleMapLink} target="_blank" rel="noreferrer">

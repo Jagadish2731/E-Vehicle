@@ -40,7 +40,7 @@ Develop a full-stack web application in MERN stack to:
 
 ### User Module
 - Register/Login
-- Search nearby bunks by coordinates and radius
+- Search bunks by state, district, and optional city or area (India)
 - View bunk details (address, mobile, map link)
 - View slot vacancy and reserve slot
 - Cancel active booking

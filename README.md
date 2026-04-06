@@ -6,7 +6,7 @@ Full-stack MERN project for EV charging station discovery, slot vacancy, and boo
 - User/Admin register and login (JWT auth)
 - Admin: create/manage EV bunk details
 - Admin: create/manage recharge slots
-- User: search nearby bunks using latitude/longitude and radius
+- User: find bunks by Indian state, district, and optional city/area
 - User: view bunk details and slot vacancy
 - User: book available slot
 - Admin: update booking status (charging/completed/cancelled)
@@ -27,7 +27,8 @@ Full-stack MERN project for EV charging station discovery, slot vacancy, and boo
 - `npm run dev:backend` - run backend only
 - `npm run dev:frontend` - run frontend only
 - `npm run build` - build frontend
-- `npm run seed` - seed backend demo data
+- `npm run seed` - seed backend demo data (writes users, bunks, slots, bookings to MongoDB)
+- `npm run verify-db` - print document counts in MongoDB (checks that data exists)
 
 ## Backend Setup
 1. Open terminal in `backend`
@@ -38,7 +39,18 @@ Full-stack MERN project for EV charging station discovery, slot vacancy, and boo
    - `JWT_SECRET=change_this_secret`
    - `CLIENT_URL=http://localhost:5173`
 4. Run server: `npm run dev`
-5. Optional demo data: `npm run seed`
+5. Optional demo data: `npm run seed` (clears users/bunks/slots/bookings and inserts sample records)
+
+### Demo logins (after `npm run seed`)
+| Role | Email | Password |
+|------|--------|----------|
+| Admin | `admin@ev.com` | `admin123` |
+| User | `user@ev.com` | `user123` |
+| User | `priya@ev.com` | `user123` |
+| User | `rahul@ev.com` | `user123` |
+| User | `amit@ev.com` | `user123` |
+
+Sample data includes **3 bunks** (two in Bengaluru Urban, one in Pune), **15 slots**, and **8 bookings** across statuses (booked, charging, completed, cancelled) so the admin dashboard and reports are easy to explore.
 
 ## Frontend Setup
 1. Open terminal in `frontend`
@@ -52,7 +64,9 @@ Full-stack MERN project for EV charging station discovery, slot vacancy, and boo
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 - `GET /api/bunks`
-- `GET /api/bunks/nearby?lat=..&lng=..&radiusKm=..`
+- `GET /api/bunks/location-meta` (states and districts for dropdowns)
+- `GET /api/bunks/search?state=..&district=..&city=..&area=..` (at least one param)
+- `GET /api/bunks/nearby?lat=..&lng=..&radiusKm=..` (optional legacy distance search)
 - `POST /api/bunks` (admin)
 - `POST /api/slots` (admin)
 - `GET /api/slots/bunk/:bunkId`

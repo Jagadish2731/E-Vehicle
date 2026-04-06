@@ -26,6 +26,16 @@
   margin-top: 10px;
 }
 
+.admin-dashboard .bunk-location-line {
+  font-size: 0.86rem;
+  color: #475569;
+  margin: 4px 0 0;
+}
+
+body[data-theme="dark"] .admin-dashboard .bunk-location-line {
+  color: #cbd5e1;
+}
+
 .admin-dashboard .slot-search-row {
   margin-top: 10px;
 }

@@ -11,6 +11,30 @@
   margin-top: 10px;
 }
 
+.user-dashboard .user-location-hint {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.user-dashboard .user-location-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: center;
+}
+
+.user-dashboard .user-bunk-location {
+  font-size: 0.88rem;
+  color: #334155;
+  margin: 4px 0;
+}
+
+body[data-theme="dark"] .user-dashboard .user-bunk-location {
+  color: #cbd5e1;
+}
+
 .user-dashboard .user-bunk-toolbar {
   margin-top: 12px;
 }

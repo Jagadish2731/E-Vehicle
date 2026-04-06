@@ -17,7 +17,7 @@
 - [ ] User/Admin registration and login works
 - [ ] Admin can create/update/delete bunks
 - [ ] Admin can create/update/delete slots
-- [ ] User can search nearby bunks
+- [ ] User can search bunks by state/district (and optional city/area)
 - [ ] User can view slot vacancy and book slot
 - [ ] User can cancel active booking
 - [ ] Admin can update booking status

@@ -79,6 +79,20 @@ Full-stack MERN project for EV charging station discovery, slot vacancy, and boo
 - Backend (Render): `render.yaml` is included at project root.
 - Frontend (Vercel): `frontend/vercel.json` is included for SPA routing.
 
+## Git and GitHub
+Run all Git commands from this project folder (`E-Vehicle`), not from your user home directory.
+
+1. Create a new empty repository on GitHub (no README/license if you already have commits locally).
+2. Add the remote and push (replace `YOUR_USER` and `YOUR_REPO`):
+
+```bash
+git remote add origin https://github.com/YOUR_USER/YOUR_REPO.git
+git branch -M main
+git push -u origin main
+```
+
+If your first commit is on `master`, either push `master` or rename first: `git branch -M main` then push.
+
 ## Submission Documents
 - Detailed report: `docs/PROJECT_REPORT.md`
 - Test cases: `docs/TEST_CASES.md`

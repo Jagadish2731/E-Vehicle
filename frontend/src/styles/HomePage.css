@@ -23,3 +23,13 @@
   margin-top: 6px;
   font-weight: 700;
 }
+
+.home-page .bunk-location-line {
+  font-size: 0.88rem;
+  color: #334155;
+  margin: 2px 0;
+}
+
+body[data-theme="dark"] .home-page .bunk-location-line {
+  color: #cbd5e1;
+}

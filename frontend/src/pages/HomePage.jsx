@@ -20,13 +20,18 @@ export default function HomePage() {
 
   return (
     <main className="container home-page">
-      <h2>Nearby EV Recharge Stations</h2>
+      <h2>EV Recharge Stations</h2>
       {error && <p className="error">{error}</p>}
       <div className="grid home-bunk-grid">
         {bunks.map((bunk) => (
           <article key={bunk._id} className="card bunk-card">
             <h3>{bunk.name}</h3>
             <p>{bunk.address}</p>
+            {(bunk.area || bunk.city || bunk.district || bunk.state) && (
+              <p className="bunk-location-line">
+                {[bunk.area, bunk.city, bunk.district, bunk.state].filter(Boolean).join(" · ")}
+              </p>
+            )}
             <p>Mobile: {bunk.mobile}</p>
             <p>
               Slots: {bunk.slotStats?.available || 0} available / {bunk.slotStats?.total || 0} total
